@@ -27,7 +27,7 @@ def make_events():
     return toReturn
 
 class sim():
-    def __init__(self, init_state, init_params, init_t, init_dt, events, scheme=True, use_events = True):
+    def __init__(self, init_state, init_params, init_t, init_dt, events, use_events=True, scheme=True):
         #init state should be a dict of: 
         # {S: value, I: value, D: value, A: value, R: value, T: value, H: value, E: value}
         #init params should be a dict of: 
@@ -139,10 +139,12 @@ def main():
     events = make_events()
     end_time = 350 #in days
     step_size = 1 #in days.
+    scheme_choice = True #False for Euler, True for RK4
+    use_events = True
     #making the step size too large or too small will break the sim due to the limits of 32bit floating points.
     #the best part of making sims is breaking sims :)
 
-    sampleSim = sim(sample_state, sample_params, 0, step_size, events, True, True)
+    sampleSim = sim(sample_state, sample_params, 0, step_size, events, use_events, scheme_choice)
     
     sampleSim.run(end_time)
 
@@ -177,8 +179,6 @@ def main():
         e_vals.append(states[7])
     
     n_steps = np.arange(0, len(i_vals))
-    print(len(n_steps))
-    print(len(i_vals))
 
     # plt.plot(n_steps, s_vals, label='S')
     plt.plot(n_steps, i_vals, label='I')
@@ -191,7 +191,17 @@ def main():
     plt.legend()
     plt.xlabel("Days")
     plt.ylabel("Population Proportion")
-    plt.title(("With Events, RK4 integration, dt = " + str(step_size)))
+    title = ""
+    if(use_events):
+        title += "With Events, "
+    else:
+        title += "No Events, "
+    if(scheme_choice):
+        title += "RK4 Integration, "
+    else:
+        title += "Euler Integration, "
+    title +=  "dt = " + str(step_size)
+    plt.title(title)
     plt.show()
 
 
